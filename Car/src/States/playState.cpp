@@ -4,6 +4,8 @@ PlayState::PlayState(sf::RenderWindow& window):
 	State(window)	
 {
 	cars.emplace_back(std::make_unique<PlayerCar>(sf::Vector2f{200, 100}, sf::Vector2f{36, 12}, sf::Color{200, 50, 50}));
+	cars.emplace_back(std::make_unique<SimpleAiCar>(sf::Vector2f{200, 90}, sf::Vector2f{36, 12}, sf::Color{50, 50, 250}));
+	cars.emplace_back(std::make_unique<SimpleAiCar>(sf::Vector2f{200, 110}, sf::Vector2f{36, 12}, sf::Color{50, 50, 250}));
 }
 
 void PlayState::init() {

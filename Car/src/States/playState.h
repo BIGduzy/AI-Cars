@@ -8,6 +8,7 @@
 #include "state.h"
 #include "../Car/car.h"
 #include "../Car/playerCar.h"
+#include "../Car/simpleAiCar.h"
 #include "../Track/track.h"
 
 class PlayState: public State {
