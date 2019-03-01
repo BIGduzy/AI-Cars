@@ -16,7 +16,6 @@ int main() {
 
 	int update_counter = 0;
 	int render_counter = 0;
-	const sf::Time time_per_update = sf::seconds(1.f / 60.f);
 	sf::Clock update_clock;
 	sf::Clock stats_clock;
 	sf::Time delta_time; // time between last update and current update call
@@ -60,6 +59,7 @@ int main() {
 		/**********/
 		/**UPDATE**/
 		/**********/
+		const sf::Time time_per_update = sf::seconds(1.f / GameStateManager::FPS);
 		sf::Time elapsedTime = update_clock.restart();
 		delta_time += elapsedTime;
 		while (delta_time >= time_per_update) {
@@ -72,20 +72,24 @@ int main() {
 		/**********/
 		/**RENDER**/
 		/**********/
-		window.clear(sf::Color(200, 200, 200));
-		// Draw the active state
-		GameStateManager::getCurrentState()->render();
-		window.display();
-		render_counter++;
+		if (GameStateManager::FPS <= 240) { // TODO: Remove thiss
+			window.clear(sf::Color(200, 200, 200));
+			// Draw the active state
+			GameStateManager::getCurrentState()->render();
+			window.display();
+			render_counter++;
 
-		sf::sleep(sf::milliseconds(10)); // call this when you want to limit your fps
+			sf::sleep(sf::milliseconds(10)); // call this when you want to limit your fps
+		}
 
-										 //update fps and ups
+
+		//update fps and ups
 		if (stats_clock.getElapsedTime() > sf::seconds(1)) {
 			stats_clock.restart();
 			std::string temp = "ups = " + std::to_string(update_counter) + " fps = " + std::to_string(render_counter);
 			window.setTitle(temp);
-			update_counter = render_counter = 0;
+			update_counter = 0;
+			render_counter = 0;
 		}
 
 	}

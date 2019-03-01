@@ -6,22 +6,26 @@ SimpleAiCar::SimpleAiCar(const sf::Vector2f& position, const sf::Vector2f& size,
 void SimpleAiCar::calculateMove() {
 	enum class Directions {
 		FRONT = 0,
-		FRONT_RIGHT = 1,
-		BACK_RIGHT = 2,
-		BACK = 3,
-		BACK_LEFT = 4,
-		FRONT_LEFT = 5,
+		FRONT_RIGHT_MID,
+		FRONT_RIGHT,
+		BACK_RIGHT,
+		BACK,
+		BACK_LEFT,
+		FRONT_LEFT,
+		FRONT_LEFT_MID,
 	};
 	const float frontDist = distanceToObstacles[(size_t)Directions::FRONT];
+	const float frontRightMidDist = distanceToObstacles[(size_t)Directions::FRONT_RIGHT_MID];
 	const float frontRightDist = distanceToObstacles[(size_t)Directions::FRONT_RIGHT];
 	const float backRightDist = distanceToObstacles[(size_t)Directions::BACK_RIGHT];
 	const float backDist = distanceToObstacles[(size_t)Directions::BACK];
 	const float backLeftDist = distanceToObstacles[(size_t)Directions::BACK_LEFT];
 	const float frontLeftDist = distanceToObstacles[(size_t)Directions::FRONT_LEFT];
+	const float frontLeftMidDist = distanceToObstacles[(size_t)Directions::FRONT_LEFT_MID];
 
-	const float forwardThreshold = visionRange * 0.55f;
-	const float backwardThreshold = visionRange * 0.95f;
-	const float turnThreshold = visionRange * 0.02f;
+	const float forwardThreshold = visionRange * 0.45f;
+	const float backwardThreshold = visionRange * 0.80f;
+	const float turnThreshold = visionRange * 0.01f;
 
 	// Reset
 	forward = false;

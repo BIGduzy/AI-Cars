@@ -26,6 +26,8 @@ private:
 	*/
 	static std::vector<std::shared_ptr<State>> states;
 public:
+	static float FPS;
+
 	/**
 	* @brief Returns top of the stack
 	*/

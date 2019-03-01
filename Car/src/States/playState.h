@@ -9,6 +9,7 @@
 #include "../Car/car.h"
 #include "../Car/playerCar.h"
 #include "../Car/simpleAiCar.h"
+#include "../Car/neuronCar.h"
 #include "../Track/track.h"
 
 class PlayState: public State {
@@ -21,6 +22,9 @@ private:
 		bool overlab;
 		sf::Vector2f position;
 	};
+
+	sf::Font font;
+	Car* selectedCar = nullptr;
 
 private:
 	// TODO: Move These to Math class
@@ -36,4 +40,5 @@ public:
 	void cleanUp() override;
 	void onKeyPressed(sf::Event& evt) override;
 	void onKeyReleased(sf::Event& evt) override;
+	void onMouseButtonPressed(sf::Event& evt) override;
 };

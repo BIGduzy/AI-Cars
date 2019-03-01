@@ -19,19 +19,25 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Car\neuronCar.cpp" />
     <ClCompile Include="src\Car\playerCar.cpp" />
     <ClCompile Include="src\Car\car.cpp" />
     <ClCompile Include="src\Car\simpleAiCar.cpp" />
     <ClCompile Include="src\GSM\gameStateManager.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\NeuralNet\net.cpp" />
+    <ClCompile Include="src\NeuralNet\neuron.cpp" />
     <ClCompile Include="src\States\playState.cpp" />
     <ClCompile Include="src\Track\track.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Car\neuronCar.h" />
     <ClInclude Include="src\Car\playerCar.h" />
     <ClInclude Include="src\Car\car.h" />
     <ClInclude Include="src\Car\simpleAiCar.h" />
     <ClInclude Include="src\GSM\gameStateManager.h" />
+    <ClInclude Include="src\NeuralNet\net.hpp" />
+    <ClInclude Include="src\NeuralNet\neuron.hpp" />
     <ClInclude Include="src\States\playState.h" />
     <ClInclude Include="src\States\state.h" />
     <ClInclude Include="src\Track\track.h" />

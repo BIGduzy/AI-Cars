@@ -3,6 +3,8 @@
 
 GameStateManager::GameStateManager() {};
 
+float GameStateManager::FPS = 60.0f;
+
 // Static member variables must be declared
 std::vector<std::shared_ptr<State>> GameStateManager::states;
 

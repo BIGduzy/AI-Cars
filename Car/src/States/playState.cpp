@@ -5,11 +5,13 @@ PlayState::PlayState(sf::RenderWindow& window):
 {
 	cars.emplace_back(std::make_unique<PlayerCar>(sf::Vector2f{200, 100}, sf::Vector2f{36, 12}, sf::Color{200, 50, 50}));
 	cars.emplace_back(std::make_unique<SimpleAiCar>(sf::Vector2f{200, 90}, sf::Vector2f{36, 12}, sf::Color{50, 50, 250}));
-	cars.emplace_back(std::make_unique<SimpleAiCar>(sf::Vector2f{200, 110}, sf::Vector2f{36, 12}, sf::Color{50, 50, 250}));
+	cars.emplace_back(std::make_unique<NeuronCar>(sf::Vector2f{200, 100}, sf::Vector2f{36, 12}, sf::Color{50, 200, 50}));
 }
 
 void PlayState::init() {
-
+	if (!font.loadFromFile("resources/Font/Camouflage.ttf")) {
+		std::cout << "Could not load Camouflage.ttf" << std::endl;
+	}
 }
 
 float PlayState::calculateDistance(const sf::Vector2f& pointA, const sf::Vector2f& pointB) const {
@@ -66,10 +68,12 @@ void PlayState::update() {
 		if (onFinishLine && !car->onFinishLine) { // Prevent multiple score if car stays on finish line
 			car->onFinishLine = true;
 			car->score += 1;
+			car->rotation += 3.1415926535f; // TODO: This is only for training
+			if (car->score % 100 == 0) 
+				std::cout << carIndex << ": " << car->score << std::endl; // TODO: Write on screen
 		} else {
 			car->onFinishLine = onFinishLine;
 		}
-		std::cout << carIndex << ": " << car->score << std::endl; // TODO: Write on screen
 
 		bool hit = false;
 		const auto& vertices = track.getVertices();
@@ -80,7 +84,6 @@ void PlayState::update() {
 
 			const auto& vertex = vertices[i];
 			const auto& nextVertex = vertices[i + 1];
-
 			if (vertex.position == finish[0].position && nextVertex.position == finish[1].position) { // Skip finish
 				continue;
 			}
@@ -118,6 +121,15 @@ void PlayState::update() {
 					float distance = calculateDistance(car->getPosition(), overlab.position);
 					// Prevent overwriting the distance when a vision line sees more than one track line
 					smallestDistance = std::min(smallestDistance, distance);
+				}
+			}
+
+			for (const auto& otherCar : cars) {
+				if (otherCar == car) { continue; } // Skip same car
+
+				const auto overlab = overlaps(otherCar->getShape(), line.first, line.second);
+				if (overlab) {
+					// TODO: Calculate distance to car
 				}
 			}
 
@@ -170,9 +182,44 @@ void PlayState::render() const {
 						window.draw(circle);
 					}
 				}
+
+				for (const auto& otherCar : cars) {
+					if (otherCar == car) { continue; } // Skip same car
+
+					// TODO: Get collision position
+					const auto overlab = overlaps(otherCar->getShape(), line.first, line.second);
+					if (overlab) {
+						auto circle = sf::CircleShape(5.0f);
+						circle.setPosition(otherCar->getShape().getPosition());
+						circle.setFillColor(car->getShape().getFillColor());
+						circle.setOrigin({5.0f, 5.0f});
+						window.draw(circle);
+					}
+				}
 			}
 		} // End debug
 	} // End cars
+
+	// Render Mouse box
+	sf::Vector2f mousePos(static_cast<float>(sf::Mouse::getPosition(window).x), static_cast<float>(sf::Mouse::getPosition(window).y));
+	sf::RectangleShape mouseRect({50, 50});
+	mouseRect.setOrigin({25, 25});
+	mouseRect.setPosition(mousePos);
+	window.draw(mouseRect);
+
+	// Render selectedCar
+	if (selectedCar != nullptr) {
+		sf::Text currentAction("Test", font, 30);
+		sf::FloatRect textRect = currentAction.getGlobalBounds();
+		currentAction.setOrigin({textRect.left + textRect.width / 2.0f, textRect.top + textRect.height / 2.0f});
+		currentAction.setPosition({50.0f, 400.0f});
+		std::string actionString = (selectedCar->forward) ? "Forward " : " ";
+		actionString += (selectedCar->backward) ? "Backward " : " ";
+		actionString += (selectedCar->left) ? "Left " : " ";
+		actionString += (selectedCar->right) ? "Right " : " ";
+		currentAction.setString(actionString);
+		window.draw(currentAction);
+	}
 }
 
 void PlayState::cleanUp() {
@@ -219,4 +266,20 @@ void PlayState::onKeyReleased(sf::Event& evt) {
 		break;
 	}
 
+}
+
+void PlayState::onMouseButtonPressed(sf::Event& evt) {
+	if (evt.mouseButton.button == sf::Mouse::Left) {
+		sf::Vector2f mousePos(static_cast<float>(evt.mouseButton.x), static_cast<float>(evt.mouseButton.y));
+		sf::RectangleShape mouseRect({50, 50});
+		mouseRect.setOrigin({25, 25});
+		mouseRect.setPosition(mousePos);
+
+		for (const auto& car : cars) {
+			if (car->getShape().getGlobalBounds().intersects(mouseRect.getGlobalBounds())) {
+				selectedCar = car.get();
+				break;
+			}
+		}
+	}
 }

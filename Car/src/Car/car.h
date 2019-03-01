@@ -11,26 +11,29 @@ class Car {
 protected:
 	sf::RectangleShape body; // TODO: Replace with texture
 	sf::Vector2f position, velocity;
-	float power = 3, rotation = 0, turnSpeed = 0.02f, maxSpeed = 6;
+	float power = 3, turnSpeed = 0.04f, maxSpeed = 6;
 
-	static constexpr size_t numLines = 6;
+	static constexpr size_t numLines = 8;
 	static constexpr float PI = 3.1415926535897932f;
 	std::array<std::pair<sf::Vector2f, sf::Vector2f>, numLines> visionLines{
 		std::pair<sf::Vector2f, sf::Vector2f>{{0, 0},{visionRange, visionRange}},
 	};
 	std::array<float, numLines> visionLineAngles{
 		0,
+		PI * 0.15,
 		PI / 3,
 		PI - PI / 3,
 		PI,
 		PI + PI / 3,
 		-PI / 3,
+		-PI * 0.15
 	};
 	std::array<float, numLines> distanceToObstacles {
 		visionRange + 1 // Set all to max range + 1
 	};
-	bool forward = false, backward = false, left = false, right = false;
 public:
+	bool forward = false, backward = false, left = false, right = false; // TODO: Do not make this public
+	float rotation = 0;
 	static constexpr float visionRange = 200; 
 	bool forwardPressed = false, backwardPressed = false, leftPressed = false, rightPressed = false;
 	bool hit = false, onFinishLine = false;

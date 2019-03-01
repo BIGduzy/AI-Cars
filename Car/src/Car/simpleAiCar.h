@@ -2,11 +2,6 @@
 
 #include <SFML\Graphics.hpp>
 
-#include <algorithm>
-#include <array>
-#include <cmath>
-#include <utility>
-
 #include <iostream>
 
 #include "car.h"
