@@ -67,8 +67,8 @@ void NeuronCar::calculateMove() {
 	carBrain.getResults(results);
 
 	// The first few labs are player controlled
-	if (score < 10000) {
-		GameStateManager::FPS = 40000; // 50340 NOTE: This only works on release
+	if (score < 2'000) {
+		GameStateManager::FPS = 7'000; // 50340 NOTE: This only works on release
 		tmpAi();
 		forward = targetForward;
 		backward = targetBackward;
