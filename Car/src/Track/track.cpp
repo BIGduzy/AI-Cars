@@ -105,19 +105,19 @@ Track::Track():
 
 	// Inner
 	vertices.append({{200,  125},	{150, 150, 150}});
-	vertices.append({{1080, 125},	{150, 150, 150}});
-	vertices.append({{1155, 200},	{150, 150, 150}});
+	vertices.append({{1050, 125},	{150, 150, 150}});
+	vertices.append({{1155, 150},	{150, 150, 150}});
 	vertices.append({{1150, 570},	{150, 150, 150}});
 
 	vertices.append({{1100, 600},	{150, 150, 150}});
 	vertices.append({{925, 580},	{150, 150, 150}});
 
 	vertices.append({{850, 475},	{150, 150, 150}});
-	vertices.append({{1000, 400},	{150, 150, 150}});
+	vertices.append({{1050, 400},	{150, 150, 150}});
 	vertices.append({{1050, 127},	{150, 150, 150}});
 	
-	vertices.append({{600, 127},	{150, 150, 150}});
-	vertices.append({{500, 225},	{150, 150, 150}});
+	vertices.append({{500, 127},	{150, 150, 150}});
+	vertices.append({{500, 275},	{150, 150, 150}});
 	vertices.append({{500, 500},	{150, 150, 150}});
 
 	vertices.append({{550, 600},	{150, 150, 150}});

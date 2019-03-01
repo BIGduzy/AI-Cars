@@ -34,8 +34,8 @@ void Car::update(sf::RenderWindow& window) {
 		velocity.x *= 0.92f;
 		velocity.y *= 0.92f;
 	} else {
-		velocity.x *= 0.96f;
-		velocity.y *= 0.96f;
+		velocity.x *= 0.95f;
+		velocity.y *= 0.95f;
 	}
 
 	if (left && (std::round(velocity.x) != 0 || std::round(velocity.y) != 0 || true)) { // TODO: Remove true when AI is good

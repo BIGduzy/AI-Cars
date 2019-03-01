@@ -68,7 +68,7 @@ void PlayState::update() {
 		if (onFinishLine && !car->onFinishLine) { // Prevent multiple score if car stays on finish line
 			car->onFinishLine = true;
 			car->score += 1;
-			car->rotation += 3.1415926535f; // TODO: This is only for training
+			// car->rotation += 3.1415926535f; // TODO: This is only for training
 			if (car->score % 100 == 0) 
 				std::cout << carIndex << ": " << car->score << std::endl; // TODO: Write on screen
 		} else {

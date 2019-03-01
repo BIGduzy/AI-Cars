@@ -11,7 +11,7 @@ class Car {
 protected:
 	sf::RectangleShape body; // TODO: Replace with texture
 	sf::Vector2f position, velocity;
-	float power = 3, turnSpeed = 0.04f, maxSpeed = 6;
+	float power = 4, turnSpeed = 0.04f, maxSpeed = 6;
 
 	static constexpr size_t numLines = 8;
 	static constexpr float PI = 3.1415926535897932f;

@@ -13,6 +13,8 @@ private:
 	Net carBrain;
 	void tmpAi();
 	bool targetForward = false, targetBackward = false, targetLeft = false, targetRight = false;
+	sf::Vector2f lastPos;
+	float lastRotation;
 public:
 	NeuronCar(const sf::Vector2f& position, const sf::Vector2f& size, const sf::Color& color);
 	void calculateMove() override;
