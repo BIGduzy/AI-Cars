@@ -23,21 +23,20 @@ void SimpleAiCar::calculateMove() {
 	const float frontLeftDist = distanceToObstacles[(size_t)Directions::FRONT_LEFT];
 	const float frontLeftMidDist = distanceToObstacles[(size_t)Directions::FRONT_LEFT_MID];
 
-	const float forwardThreshold = visionRange * 0.45f;
-	const float backwardThreshold = visionRange * 0.80f;
-	const float turnThreshold = visionRange * 0.01f;
+	const float forwardThreshold = visionRange * 0.23f;
+	const float backwardThreshold = visionRange * 0.96f;
+	const float turnThreshold = visionRange * 0.03f;
 
 	// Reset
-	forward = false;
+	speed = 0;
 	backward = false;
 	left = false;
 	right = false;
 
-	if (frontDist > forwardThreshold) {
-		forward = true;
-	}
+	speed = (frontDist - 0) * (1 - 0) / (visionRange - 0) + 0; // Normalise distance to speed
+	speed -= 0.2f;
 
-	if (frontDist < backwardThreshold || backDist < backwardThreshold) {
+	if (frontDist < backwardThreshold) {
 		backward = true;
 	}
 

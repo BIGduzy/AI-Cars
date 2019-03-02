@@ -12,9 +12,9 @@ class NeuronCar: public Car {
 private:
 	Net carBrain;
 	void tmpAi();
-	bool targetForward = false, targetBackward = false, targetLeft = false, targetRight = false;
+	bool targetBackward = false, targetLeft = false, targetRight = false;
 	sf::Vector2f lastPos;
-	float lastRotation;
+	float lastRotation, targetForward;
 public:
 	NeuronCar(const sf::Vector2f& position, const sf::Vector2f& size, const sf::Color& color);
 	void calculateMove() override;

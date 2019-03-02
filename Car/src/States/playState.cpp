@@ -4,8 +4,8 @@ PlayState::PlayState(sf::RenderWindow& window):
 	State(window)	
 {
 	cars.emplace_back(std::make_unique<PlayerCar>(sf::Vector2f{200, 100}, sf::Vector2f{36, 12}, sf::Color{200, 50, 50}));
+	cars.emplace_back(std::make_unique<NeuronCar>(sf::Vector2f{200, 90}, sf::Vector2f{36, 12}, sf::Color{50, 200, 50}));
 	cars.emplace_back(std::make_unique<SimpleAiCar>(sf::Vector2f{200, 90}, sf::Vector2f{36, 12}, sf::Color{50, 50, 250}));
-	cars.emplace_back(std::make_unique<NeuronCar>(sf::Vector2f{200, 100}, sf::Vector2f{36, 12}, sf::Color{50, 200, 50}));
 }
 
 void PlayState::init() {
@@ -33,42 +33,44 @@ PlayState::Overlab PlayState::overlaps(const sf::Vector2f& pointA, const sf::Vec
 	};
 }
 
-bool PlayState::overlaps(const sf::RectangleShape& shape, const sf::Vector2f& pointC, const sf::Vector2f& pointD) const {
+PlayState::Overlab PlayState::overlaps(const sf::RectangleShape& shape, const sf::Vector2f& pointC, const sf::Vector2f& pointD) const {
 	// Rotation of the rectangle;
 	const auto topLeft = shape.getTransform().transformPoint(sf::Vector2f{0, 0});
 	const auto topRight = shape.getTransform().transformPoint(sf::Vector2f{shape.getSize().x, 0});
 	const auto bottomLeft = shape.getTransform().transformPoint(sf::Vector2f{0, shape.getSize().y});
 	const auto bottomRight = shape.getTransform().transformPoint(sf::Vector2f{shape.getSize().x, shape.getSize().y});
 
-	return (
+	return {(
 		overlaps(topLeft, bottomLeft, pointC, pointD).overlab || // Left
 		overlaps(topRight, bottomRight, pointC, pointD).overlab || // Right
 		overlaps(topLeft, topRight, pointC, pointD).overlab || // Top
 		overlaps(bottomLeft, bottomRight, pointC, pointD).overlab    // Bottom
-	);
+	),
+		overlaps(topRight, bottomRight, pointC, pointD).position // TOOD: Calculate once and use center of car
+	};
 }
 
 void PlayState::update() {
 	size_t carIndex = 0;
 	for (auto& car : cars) {
-		// AI move
-		car->calculateMove();
-		// Update car position
-		car->update(window);
-
 		// Keyboard controlls
 		car->forwardPressed = wKeyDown;
 		car->backwardPressed = sKeyDown;
 		car->leftPressed = aKeyDown;
 		car->rightPressed = dKeyDown;
 
+		// AI move
+		car->calculateMove();
+		// Update car position
+		car->update(window);
+
 		// Check for collision with finish line and up score when crossed
 		const auto finish = track.getFinishLine();
-		bool onFinishLine = overlaps(car->getShape(), finish[0].position, finish[1].position);
+		bool onFinishLine = overlaps(car->getShape(), finish[0].position, finish[1].position).overlab;
 		if (onFinishLine && !car->onFinishLine) { // Prevent multiple score if car stays on finish line
 			car->onFinishLine = true;
 			car->score += 1;
-			// car->rotation += 3.1415926535f; // TODO: This is only for training
+			car->rotation += 3.1415926535f; // TODO: This is only for training
 			if (car->score % 100 == 0) 
 				std::cout << carIndex << ": " << car->score << std::endl; // TODO: Write on screen
 		} else {
@@ -88,7 +90,7 @@ void PlayState::update() {
 				continue;
 			}
 
-			if (overlaps(car->getShape(), vertex.position, nextVertex.position)) {
+			if (overlaps(car->getShape(), vertex.position, nextVertex.position).overlab) {
 				hit = true;
 			}
 		}
@@ -128,8 +130,10 @@ void PlayState::update() {
 				if (otherCar == car) { continue; } // Skip same car
 
 				const auto overlab = overlaps(otherCar->getShape(), line.first, line.second);
-				if (overlab) {
-					// TODO: Calculate distance to car
+				if (overlab.overlab) {
+					float distance = calculateDistance(car->getPosition(), overlab.position);
+					// Prevent overwriting the distance when a vision line sees more than one track line
+					// smallestDistance = std::min(smallestDistance, distance); // TODO: Before we do this we need an AI that can drive d;)
 				}
 			}
 
@@ -188,9 +192,9 @@ void PlayState::render() const {
 
 					// TODO: Get collision position
 					const auto overlab = overlaps(otherCar->getShape(), line.first, line.second);
-					if (overlab) {
+					if (overlab.overlab) {
 						auto circle = sf::CircleShape(5.0f);
-						circle.setPosition(otherCar->getShape().getPosition());
+						circle.setPosition(overlab.position);
 						circle.setFillColor(car->getShape().getFillColor());
 						circle.setOrigin({5.0f, 5.0f});
 						window.draw(circle);
@@ -213,7 +217,8 @@ void PlayState::render() const {
 		sf::FloatRect textRect = currentAction.getGlobalBounds();
 		currentAction.setOrigin({textRect.left + textRect.width / 2.0f, textRect.top + textRect.height / 2.0f});
 		currentAction.setPosition({50.0f, 400.0f});
-		std::string actionString = (selectedCar->forward) ? "Forward " : " ";
+		std::string actionString = "Forward ";
+		actionString += std::to_string(selectedCar->getSpeed()) + "% ";
 		actionString += (selectedCar->backward) ? "Backward " : " ";
 		actionString += (selectedCar->left) ? "Left " : " ";
 		actionString += (selectedCar->right) ? "Right " : " ";

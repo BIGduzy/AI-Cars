@@ -30,7 +30,7 @@ private:
 	// TODO: Move These to Math class
 	float calculateDistance(const sf::Vector2f& pointA, const sf::Vector2f& pointB) const;
 	Overlab overlaps(const sf::Vector2f& pointA, const sf::Vector2f& pointB, const sf::Vector2f& pointC, const sf::Vector2f& pointD) const;
-	bool overlaps(const sf::RectangleShape& shape, const sf::Vector2f& pointC, const sf::Vector2f& pointD) const;
+	Overlab overlaps(const sf::RectangleShape& shape, const sf::Vector2f& pointC, const sf::Vector2f& pointD) const;
 public:
 	PlayState(sf::RenderWindow& window);
 

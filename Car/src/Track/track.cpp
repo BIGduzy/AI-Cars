@@ -76,18 +76,18 @@ Track::Track():
 	vertices.append({{ 600, 300},	{150, 150, 150}});
 
 	vertices.append({{ 600, 450},	{150, 150, 150}});
-	vertices.append({{ 700, 620},	{150, 150, 150}});
-	vertices.append({{ 700, 645},	{150, 150, 150}});
-	vertices.append({{ 675, 670},	{150, 150, 150}});
+	vertices.append({{ 675, 620},	{150, 150, 150}});
+	vertices.append({{ 675, 645},	{150, 150, 150}});
+	vertices.append({{ 650, 670},	{150, 150, 150}});
 	vertices.append({{ 650, 695},	{150, 150, 150}});
 
 	vertices.append({{ 400, 695},	{150, 150, 150}});
 	vertices.append({{ 375, 670},	{150, 150, 150}});
 	vertices.append({{ 350, 645},	{150, 150, 150}});
 	vertices.append({{ 325, 620},	{150, 150, 150}});
-	vertices.append({{ 325, 400},	{150, 150, 150}});
+	vertices.append({{ 300, 400},	{150, 150, 150}});
 
-	vertices.append({{ 250, 375},	{150, 150, 150}});
+	vertices.append({{ 200, 375},	{150, 150, 150}});
 	vertices.append({{ 200, 350},	{150, 150, 150}});
 	vertices.append({{ 175, 325},	{150, 150, 150}});
 	vertices.append({{ 150, 300},	{150, 150, 150}});

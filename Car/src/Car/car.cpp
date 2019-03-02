@@ -18,24 +18,20 @@ void Car::setDistanceToObstacle(size_t visionLineIndex, float distance) {
 
 void Car::update(sf::RenderWindow& window) {
 	// Movement
-	if (forward) {
-		float vx = power * cos(rotation) * 0.1f;
-		float vy = power * sin(rotation) * 0.1f;
-		if (velocity.x < maxSpeed && velocity.x > -maxSpeed) {
-			velocity.x += vx;
-		}
-
-		if (velocity.y < maxSpeed && velocity.y > -maxSpeed)
-			velocity.y += vy;
+	// TODO: Add acceleration
+	float vx = (maxSpeed * cos(rotation) * 0.1f) * speed;
+	float vy = (maxSpeed * sin(rotation) * 0.1f) * speed;
+	if (velocity.x < maxSpeed && velocity.x > -maxSpeed) {
+		velocity.x += vx;
 	}
+
+	if (velocity.y < maxSpeed && velocity.y > -maxSpeed)
+		velocity.y += vy;
 
 	// TODO: Maybe not hardcode this
 	if (backward) {
 		velocity.x *= 0.92f;
 		velocity.y *= 0.92f;
-	} else {
-		velocity.x *= 0.95f;
-		velocity.y *= 0.95f;
 	}
 
 	if (left && (std::round(velocity.x) != 0 || std::round(velocity.y) != 0 || true)) { // TODO: Remove true when AI is good

@@ -30,9 +30,9 @@ void NeuronCar::tmpAi() {
 	const float frontLeftDist = distanceToObstacles[(size_t)Directions::FRONT_LEFT];
 	const float frontLeftMidDist = distanceToObstacles[(size_t)Directions::FRONT_LEFT_MID];
 
-	const float forwardThreshold = visionRange * 0.55f;
-	const float backwardThreshold = visionRange * 0.95f;
-	const float turnThreshold = visionRange * 0.01f;
+	const float forwardThreshold = visionRange * 0.23f;
+	const float backwardThreshold = visionRange * 0.96f;
+	const float turnThreshold = visionRange * 0.03f;
 
 	// Reset
 	targetForward = false;
@@ -40,9 +40,8 @@ void NeuronCar::tmpAi() {
 	targetLeft = false;
 	targetRight = false;
 
-	if (frontDist > forwardThreshold) {
-		targetForward = true;
-	}
+	targetForward = (frontDist - 0) * (1 - 0) / (visionRange - 0) + 0; // Normalise distance to speed
+	targetForward -= 0.2f;
 
 	if (frontDist < backwardThreshold) {
 		targetBackward = true;
@@ -54,6 +53,7 @@ void NeuronCar::tmpAi() {
 		targetLeft = true;
 	}
 
+	// Remove from stuck position
 	if (lastPos.x > position.x - 3 &&
 		lastPos.x < position.x + 3 &&
 		lastPos.y > position.y - 3 &&
@@ -61,7 +61,7 @@ void NeuronCar::tmpAi() {
 		lastRotation > rotation - turnSpeed &&
 		lastRotation < rotation + turnSpeed)
 	{
-		targetForward = true;
+		targetForward = 1;
 		targetRight = (frontLeftMidDist + frontLeftDist) < (frontRightMidDist + frontRightDist);
 		targetLeft = !targetRight;
 	}
@@ -78,20 +78,19 @@ void NeuronCar::calculateMove() {
 		double input = (static_cast<double>(distances) - 0) * (1 - 0) / (visionRange - 0) + 0;
 		inputVals.emplace_back(input);
 	}
-
 	carBrain.feedForward(inputVals);
+
 	std::vector<double> results;
 	carBrain.getResults(results);
 
 	// The first few labs are player controlled
-	if (score < 2'000) {
+	if (score < 10'000) { // TODO: Find out why our ai can't beat
 		GameStateManager::FPS = 120 + 1 * 8'000; // 50340 NOTE: This only works on release
 		tmpAi();
-		forward = targetForward;
+		speed = targetForward;
 		backward = targetBackward;
 		left = targetLeft;
 		right = targetRight;
-
 		std::vector<double> targetVals;
 		targetVals.emplace_back(targetForward);
 		targetVals.emplace_back(targetBackward);
@@ -99,16 +98,9 @@ void NeuronCar::calculateMove() {
 		targetVals.emplace_back(targetRight);
 		carBrain.backProp(targetVals);
 	} else {
-		GameStateManager::FPS = 60;
-		std::cout << results[0] << std::endl; // forward
-		std::cout << results[1] << std::endl; // Backward
-		std::cout << results[2] << std::endl; // Left
-		std::cout << results[3] << std::endl; // Right
-		std::cout << std::endl << std::endl;
-		std::cout << std::endl << std::endl;
-
 		// My little car is all grown up, so now it can drive on its own d;) #pride
-		forward = results[0] > 0.7f;
+		GameStateManager::FPS = 60;
+		speed = static_cast<float>(results[0]);
 		backward = results[1] > 0.7f;
 		left = results[2] > 0.7f;
 		right = results[3] > 0.7f;

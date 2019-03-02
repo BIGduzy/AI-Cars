@@ -4,9 +4,8 @@ PlayerCar::PlayerCar(const sf::Vector2f& position, const sf::Vector2f& size, con
 	Car(position, size, color)
 {
 }
-
 void PlayerCar::calculateMove() {
-	forward = forwardPressed;
+	setSpeed(forwardPressed*100);
 	backward = backwardPressed;
 	left = leftPressed;
 	right = rightPressed;
