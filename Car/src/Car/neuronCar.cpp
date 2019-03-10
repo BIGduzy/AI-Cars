@@ -6,7 +6,15 @@ NeuronCar::NeuronCar(const sf::Vector2f& position, const sf::Vector2f& size, con
 	lastPos(position),
 	lastRotation(rotation)
 {
-	srand(static_cast<size_t>(time(NULL)));
+	maxSpeed = static_cast<float>(rand() % 8 + 4);
+	visionRange += maxSpeed * 20;
+	auto c = body.getFillColor();
+	c.g += 4 * 20;
+	c.g -= (int)maxSpeed * 20;
+	c.r = 0;
+	c.r += (int)maxSpeed * 20;
+	c.b = 0;
+	body.setFillColor(c);
 }
 
 // TODO: We should remove this function and use the simple ai to create a dataset
@@ -82,21 +90,21 @@ void NeuronCar::calculateMove() {
 
 	std::vector<double> results;
 	carBrain.getResults(results);
+	tmpAi();
+	std::vector<double> targetVals;
+	targetVals.emplace_back(targetForward);
+	targetVals.emplace_back(targetBackward);
+	targetVals.emplace_back(targetLeft);
+	targetVals.emplace_back(targetRight);
+	carBrain.backProp(targetVals);
 
 	// The first few labs are player controlled
-	if (score < 10'000) { // TODO: Find out why our ai can't beat
-		GameStateManager::FPS = 120 + 1 * 8'000; // 50340 NOTE: This only works on release
-		tmpAi();
+	if (score < 1) { // TODO: Find out why our ai can't beat
+		GameStateManager::FPS = 120 + 0 * 8'000; // 50340 NOTE: This only works on release
 		speed = targetForward;
 		backward = targetBackward;
 		left = targetLeft;
 		right = targetRight;
-		std::vector<double> targetVals;
-		targetVals.emplace_back(targetForward);
-		targetVals.emplace_back(targetBackward);
-		targetVals.emplace_back(targetLeft);
-		targetVals.emplace_back(targetRight);
-		carBrain.backProp(targetVals);
 	} else {
 		// My little car is all grown up, so now it can drive on its own d;) #pride
 		GameStateManager::FPS = 60;

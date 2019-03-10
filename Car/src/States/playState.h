@@ -14,8 +14,8 @@
 
 class PlayState: public State {
 private:
-	bool debug = true;
-	Track track;
+	bool debug = false;
+	const Track& track;
 	std::vector<std::unique_ptr<Car>> cars;
 	bool wKeyDown = false, aKeyDown = false, sKeyDown = false, dKeyDown = false;
 	struct Overlab {
@@ -32,7 +32,7 @@ private:
 	Overlab overlaps(const sf::Vector2f& pointA, const sf::Vector2f& pointB, const sf::Vector2f& pointC, const sf::Vector2f& pointD) const;
 	Overlab overlaps(const sf::RectangleShape& shape, const sf::Vector2f& pointC, const sf::Vector2f& pointD) const;
 public:
-	PlayState(sf::RenderWindow& window);
+	PlayState(sf::RenderWindow& window, const Track& track);
 
 	void init() override;
 	void update() override;

@@ -27,6 +27,7 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\NeuralNet\net.cpp" />
     <ClCompile Include="src\NeuralNet\neuron.cpp" />
+    <ClCompile Include="src\States\levelEditState.cpp" />
     <ClCompile Include="src\States\playState.cpp" />
     <ClCompile Include="src\Track\track.cpp" />
   </ItemGroup>
@@ -38,6 +39,7 @@
     <ClInclude Include="src\GSM\gameStateManager.h" />
     <ClInclude Include="src\NeuralNet\net.hpp" />
     <ClInclude Include="src\NeuralNet\neuron.hpp" />
+    <ClInclude Include="src\States\levelEditState.h" />
     <ClInclude Include="src\States\playState.h" />
     <ClInclude Include="src\States\state.h" />
     <ClInclude Include="src\Track\track.h" />

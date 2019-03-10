@@ -3,7 +3,8 @@
 Car::Car(const sf::Vector2f& position, const sf::Vector2f& size, const sf::Color& color):
 	body(size),
 	position(position),
-	velocity(0, 0)
+	velocity(0, 0),
+	startPosition(position)
 {
 	body.setPosition(position);
 	body.setFillColor(color);
@@ -50,8 +51,8 @@ void Car::update(sf::RenderWindow& window) {
 
 	// TODO: Make reset function
 	if (hit) {
-		position = {200, 100};
-		rotation = 0;
+		position = startPosition;
+		rotation = 0; // 3.141592f;
 		velocity = {0, 0};
 		for (auto& distance : distanceToObstacles) {
 			distance = visionRange + 1;

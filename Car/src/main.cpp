@@ -5,14 +5,16 @@
 
 #include "GSM/gameStateManager.h"
 #include "States/playState.h"
+#include "States/levelEditState.h"
 
 int main() {
+	srand(static_cast<size_t>(time(NULL)));
 	sf::RenderWindow window(sf::VideoMode(1280, 720), "Game State Manager");
 	window.setJoystickThreshold(0.7f);
 	sf::Event evt;
 
 	// The game starts in the MenuState
-	GameStateManager::pushState(std::make_shared<PlayState>(window));
+	GameStateManager::pushState(std::make_shared<LevelEditState>(window));
 
 	int update_counter = 0;
 	int render_counter = 0;

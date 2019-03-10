@@ -1,11 +1,17 @@
 #include "playState.h"
 
-PlayState::PlayState(sf::RenderWindow& window):
-	State(window)	
+PlayState::PlayState(sf::RenderWindow& window, const Track& track):
+	State(window),
+	track(track)
 {
-	cars.emplace_back(std::make_unique<PlayerCar>(sf::Vector2f{200, 100}, sf::Vector2f{36, 12}, sf::Color{200, 50, 50}));
-	cars.emplace_back(std::make_unique<NeuronCar>(sf::Vector2f{200, 90}, sf::Vector2f{36, 12}, sf::Color{50, 200, 50}));
-	cars.emplace_back(std::make_unique<SimpleAiCar>(sf::Vector2f{200, 90}, sf::Vector2f{36, 12}, sf::Color{50, 50, 250}));
+	//cars.emplace_back(std::make_unique<PlayerCar>(sf::Vector2f{200, 100}, sf::Vector2f{36, 12}, sf::Color{200, 50, 50}));
+	//cars.emplace_back(std::make_unique<SimpleAiCar>(sf::Vector2f{300, 50}, sf::Vector2f{36, 12}, sf::Color{50, 50, 250}));
+	cars.emplace_back(std::make_unique<NeuronCar>(sf::Vector2f{300, 50}, sf::Vector2f{36, 12}, sf::Color{50, 200, 50}));
+	cars.emplace_back(std::make_unique<NeuronCar>(sf::Vector2f{300, 100}, sf::Vector2f{36, 12}, sf::Color{50, 200, 50}));
+	cars.emplace_back(std::make_unique<NeuronCar>(sf::Vector2f{400, 500}, sf::Vector2f{36, 12}, sf::Color{50, 200, 50}));
+	cars.emplace_back(std::make_unique<NeuronCar>(sf::Vector2f{400, 100}, sf::Vector2f{36, 12}, sf::Color{50, 200, 50}));
+	cars.emplace_back(std::make_unique<NeuronCar>(sf::Vector2f{500, 500}, sf::Vector2f{36, 12}, sf::Color{50, 200, 50}));
+	cars.emplace_back(std::make_unique<NeuronCar>(sf::Vector2f{500, 100}, sf::Vector2f{36, 12}, sf::Color{50, 200, 50}));
 }
 
 void PlayState::init() {
@@ -51,6 +57,7 @@ PlayState::Overlab PlayState::overlaps(const sf::RectangleShape& shape, const sf
 }
 
 void PlayState::update() {
+	// TODO: Move this to car
 	size_t carIndex = 0;
 	for (auto& car : cars) {
 		// Keyboard controlls
@@ -70,7 +77,7 @@ void PlayState::update() {
 		if (onFinishLine && !car->onFinishLine) { // Prevent multiple score if car stays on finish line
 			car->onFinishLine = true;
 			car->score += 1;
-			car->rotation += 3.1415926535f; // TODO: This is only for training
+			//car->rotation += 3.1415926535f; // TODO: This is only for training
 			if (car->score % 100 == 0) 
 				std::cout << carIndex << ": " << car->score << std::endl; // TODO: Write on screen
 		} else {
@@ -78,69 +85,73 @@ void PlayState::update() {
 		}
 
 		bool hit = false;
-		const auto& vertices = track.getVertices();
-		for (size_t i = 0; i < vertices.getVertexCount(); ++i) { // We can't use ranged based for loops on sf::vertexArray
-			if (i == vertices.getVertexCount() - 1) { // Skip last one
-				break;
-			}
+		const auto& objects = track.getObjects();
+		for (const auto& object : objects) {
+			for (size_t i = 0; i < object.getVertexCount(); ++i) { // We can't use ranged based for loops on sf::vertexArray
+				if (i == object.getVertexCount() - 1) { // Skip last one
+					break;
+				}
 
-			const auto& vertex = vertices[i];
-			const auto& nextVertex = vertices[i + 1];
-			if (vertex.position == finish[0].position && nextVertex.position == finish[1].position) { // Skip finish
-				continue;
-			}
+				const auto& vertex = object[i];
+				const auto& nextVertex = object[i + 1];
+				if (vertex.position == finish[0].position && nextVertex.position == finish[1].position) { // Skip finish
+					continue;
+				}
 
-			if (overlaps(car->getShape(), vertex.position, nextVertex.position).overlab) {
-				hit = true;
+				if (overlaps(car->getShape(), vertex.position, nextVertex.position).overlab) {
+					hit = true;
+				}
 			}
 		}
 		car->hit = hit;
 
 
-		// Calculate distance to road for each vision line
+			// Calculate distance to road for each vision line
 		const auto& lines = car->getVisionLines();
 		size_t lineIndex = 0;
 		for (const auto& line : lines) {
 			float smallestDistance = car->visionRange;
+			for (const auto& object : objects) {
 
-			// Check if a vision line overlabs with track line
-			for (size_t i = 0; i < vertices.getVertexCount(); ++i) { // We can't use ranged based for loops on sf::vertexArray
-				if (i == vertices.getVertexCount() - 1) { // Skip last one
-					break;
+				// Check if a vision line overlabs with track line
+				for (size_t i = 0; i < object.getVertexCount(); ++i) { // We can't use ranged based for loops on sf::vertexArray
+					if (i == object.getVertexCount() - 1) { // Skip last one
+						break;
+					}
+
+					const auto& vertex = object[i];
+					const auto& nextVertex = object[i + 1];
+
+					// Skip finish line
+					if (vertex.position == finish[0].position && nextVertex.position == finish[1].position) {
+						continue;
+					}
+
+					// Check if there is overlab between vision line and track line and then calculate the distance
+					const auto overlab = overlaps(line.first, line.second, vertex.position, nextVertex.position);
+					if (overlab.overlab) {
+						float distance = calculateDistance(car->getPosition(), overlab.position);
+						// Prevent overwriting the distance when a vision line sees more than one track line
+						smallestDistance = std::min(smallestDistance, distance);
+					}
 				}
 
-				const auto& vertex = vertices[i];
-				const auto& nextVertex = vertices[i + 1];
+				for (const auto& otherCar : cars) {
+					if (otherCar == car) { continue; } // Skip same car
 
-				// Skip finish line
-				if (vertex.position == finish[0].position && nextVertex.position == finish[1].position) {
-					continue;
+					const auto overlab = overlaps(otherCar->getShape(), line.first, line.second);
+					if (overlab.overlab) {
+						float distance = calculateDistance(car->getPosition(), overlab.position);
+						// Prevent overwriting the distance when a vision line sees more than one track line
+						smallestDistance = std::min(smallestDistance, distance); // TODO: Before we do this we need an AI that can drive d;)
+					}
 				}
 
-				// Check if there is overlab between vision line and track line and then calculate the distance
-				const auto overlab = overlaps(line.first, line.second, vertex.position, nextVertex.position);
-				if (overlab.overlab) {
-					float distance = calculateDistance(car->getPosition(), overlab.position);
-					// Prevent overwriting the distance when a vision line sees more than one track line
-					smallestDistance = std::min(smallestDistance, distance);
-				}
+				// Set distance for vision line (used for AI)
+				car->setDistanceToObstacle(lineIndex, smallestDistance);
+
+				++lineIndex;
 			}
-
-			for (const auto& otherCar : cars) {
-				if (otherCar == car) { continue; } // Skip same car
-
-				const auto overlab = overlaps(otherCar->getShape(), line.first, line.second);
-				if (overlab.overlab) {
-					float distance = calculateDistance(car->getPosition(), overlab.position);
-					// Prevent overwriting the distance when a vision line sees more than one track line
-					// smallestDistance = std::min(smallestDistance, distance); // TODO: Before we do this we need an AI that can drive d;)
-				}
-			}
-
-			// Set distance for vision line (used for AI)
-			car->setDistanceToObstacle(lineIndex, smallestDistance);
-
-			++lineIndex;
 		}
 
 		++carIndex;
@@ -148,13 +159,17 @@ void PlayState::update() {
 }
 
 void PlayState::render() const {
-	window.draw(track.getVertices());
+	const auto& objects = track.getObjects();
+	for (const auto& object : objects) {
+		window.draw(object);
+
+	}
 
 	for (const auto& car : cars) {
 		window.draw(car->getShape());
 
 		if (debug) {
-			const auto& vertices = track.getVertices();
+			const auto& objects = track.getObjects();
 			const auto finish = track.getFinishLine();
 			const auto& lines = car->getVisionLines();
 			for (const auto& line : lines) {
@@ -163,27 +178,29 @@ void PlayState::render() const {
 				window.draw(lineVertices, 2, sf::LineStrip);
 
 				// Check if a vision line overlabs with track line
-				for (size_t i = 0; i < vertices.getVertexCount(); ++i) { // We can't use ranged based for loops on sf::vertexArray
-					if (i == vertices.getVertexCount() - 1) { // Skip last one
-						break;
-					}
+				for (const auto& object : objects) {
+					for (size_t i = 0; i < object.getVertexCount(); ++i) { // We can't use ranged based for loops on sf::vertexArray
+						if (i == object.getVertexCount() - 1) { // Skip last one
+							break;
+						}
 
-					const auto& vertex = vertices[i];
-					const auto& nextVertex = vertices[i + 1];
+						const auto& vertex = object[i];
+						const auto& nextVertex = object[i + 1];
 
-					// Skip finish
-					if (vertex.position == finish[0].position && nextVertex.position == finish[1].position) {
-						continue;
-					}
+						// Skip finish
+						if (vertex.position == finish[0].position && nextVertex.position == finish[1].position) {
+							continue;
+						}
 
-					// Draw circle if overlab
-					const auto overlab = overlaps(line.first, line.second, vertex.position, nextVertex.position);
-					if (overlab.overlab) {
-						auto circle = sf::CircleShape(5.0f);
-						circle.setPosition(overlab.position);
-						circle.setFillColor(car->getShape().getFillColor());
-						circle.setOrigin({5.0f, 5.0f});
-						window.draw(circle);
+						// Draw circle if overlab
+						const auto overlab = overlaps(line.first, line.second, vertex.position, nextVertex.position);
+						if (overlab.overlab) {
+							auto circle = sf::CircleShape(5.0f);
+							circle.setPosition(overlab.position);
+							circle.setFillColor(car->getShape().getFillColor());
+							circle.setOrigin({5.0f, 5.0f});
+							window.draw(circle);
+						}
 					}
 				}
 

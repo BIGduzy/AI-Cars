@@ -10,7 +10,7 @@
 class Car {
 protected:
 	sf::RectangleShape body; // TODO: Replace with texture
-	sf::Vector2f position, velocity;
+	sf::Vector2f position, velocity, startPosition;
 	float turnSpeed = 0.045f, maxSpeed = 6;
 	float speed = 0;
 
@@ -35,7 +35,7 @@ protected:
 public:
 	bool backward = false, left = false, right = false; // TODO: Do not make this public
 	float rotation = 0;
-	static constexpr float visionRange = 280; 
+	float visionRange = 200; 
 	bool forwardPressed = false, backwardPressed = false, leftPressed = false, rightPressed = false;
 	bool hit = false, onFinishLine = false;
 	uint_fast16_t score = 0;
