@@ -156,8 +156,7 @@ void LevelEditState::render() const {
 		window.draw(outerTrack);
 
 		const auto& mousePosI = sf::Mouse::getPosition(window);
-
-		sf::Vector2f mousePos(static_cast<float>(mousePosI.x), static_cast<float>(mousePosI.y));
+		sf::Vector2f mousePos(static_cast<float>(mousePosI.x / GRID_SIZE) * GRID_SIZE, static_cast<float>(mousePosI.y / GRID_SIZE) * GRID_SIZE);
 
 		if (selectedTrack->getVertexCount()) {
 			auto tmp = sf::VertexArray(sf::LineStrip, 2);
@@ -173,7 +172,7 @@ void LevelEditState::render() const {
 		window.draw(car->getShape());
 
 		if (track != nullptr) {
-			if (false) {
+			if (false) { // TODO: Fix
 				const auto& objects = track->getObjects();
 				const auto finish = track->getFinishLine();
 				const auto& lines = car->getVisionLines();
@@ -253,7 +252,7 @@ void LevelEditState::onKeyReleased(sf::Event& evt) {
 }
 
 void LevelEditState::onMouseButtonPressed(sf::Event& evt) {
-		sf::Vector2f mousePos(static_cast<float>(evt.mouseButton.x), static_cast<float>(evt.mouseButton.y));
+	sf::Vector2f mousePos(static_cast<float>(evt.mouseButton.x / GRID_SIZE) * GRID_SIZE, static_cast<float>(evt.mouseButton.y / GRID_SIZE) * GRID_SIZE);
 	if (evt.mouseButton.button == sf::Mouse::Left) {
 		selectedTrack->append(sf::Vertex{mousePos, sf::Color{0, 0, 0}});
 	} else if (evt.mouseButton.button == sf::Mouse::Right) {

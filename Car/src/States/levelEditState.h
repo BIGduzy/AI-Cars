@@ -13,6 +13,7 @@
 
 class LevelEditState: public State {
 private:
+	static constexpr unsigned GRID_SIZE = 16;
 	std::unique_ptr<Track> track = nullptr;
 
 	sf::VertexArray outerTrack, innerTrack;
