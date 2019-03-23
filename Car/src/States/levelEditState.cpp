@@ -2,9 +2,6 @@
 
 LevelEditState::LevelEditState(sf::RenderWindow& window):
 	State(window) {
-
-	innerTrack.setPrimitiveType(sf::LineStrip);
-	outerTrack.setPrimitiveType(sf::LineStrip);
 }
 
 void LevelEditState::init() {
@@ -151,21 +148,23 @@ void LevelEditState::render() const {
 		line.append(sf::Vertex{finish[0]});
 		line.append(sf::Vertex{finish[1]});
 		window.draw(line);
-	} else {
-		window.draw(innerTrack);
-		window.draw(outerTrack);
-
+	} else if (objects.size() > 0) {
+		for (const auto& object : objects) {
+			window.draw(object);
+		}
+		const auto& lastObject = objects.back();
 		const auto& mousePosI = sf::Mouse::getPosition(window);
 		sf::Vector2f mousePos(static_cast<float>(mousePosI.x / GRID_SIZE) * GRID_SIZE, static_cast<float>(mousePosI.y / GRID_SIZE) * GRID_SIZE);
 
-		if (selectedTrack->getVertexCount()) {
+		if (lastObject.getVertexCount()) {
 			auto tmp = sf::VertexArray(sf::LineStrip, 2);
-			sf::Vertex start = selectedTrack->operator[](selectedTrack->getVertexCount() - 1);
+			sf::Vertex start = lastObject[lastObject.getVertexCount() - 1];
 			tmp.append(start);
 			tmp.append(sf::Vertex{mousePos, {0, 225, 0}});
 			window.draw(tmp);
 		}
 	}
+	
 
 
 	for (const auto& car : cars) {
@@ -254,18 +253,27 @@ void LevelEditState::onKeyReleased(sf::Event& evt) {
 void LevelEditState::onMouseButtonPressed(sf::Event& evt) {
 	sf::Vector2f mousePos(static_cast<float>(evt.mouseButton.x / GRID_SIZE) * GRID_SIZE, static_cast<float>(evt.mouseButton.y / GRID_SIZE) * GRID_SIZE);
 	if (evt.mouseButton.button == sf::Mouse::Left) {
-		selectedTrack->append(sf::Vertex{mousePos, sf::Color{0, 0, 0}});
-	} else if (evt.mouseButton.button == sf::Mouse::Right) {
-		selectedTrack->append(selectedTrack->operator[](0)); // TODO: Hmmmmmmmmmmm
-
-		if (selectedTrack == &outerTrack) {
-			selectedTrack = &innerTrack;
-		} else if (selectedTrack == &innerTrack) {
-			selectedTrack = &outerTrack;
-			cars.emplace_back(std::make_unique<NeuronCar>(mousePos, sf::Vector2f{36, 12}, sf::Color{50, 200, 50}));
-
-			track = std::make_unique<Track>(innerTrack, outerTrack);
+		if (objects.size() == 0) {
+			objects.emplace_back(sf::LineStrip);
 		}
+		auto& object = objects.back();
+		object.append(sf::Vertex{mousePos, sf::Color{0, 0, 0}});
 
+	} else if (evt.mouseButton.button == sf::Mouse::Right) {
+		if (objects.size() == 0) {
+			objects.emplace_back(sf::LineStrip);
+		}
+		auto& object = objects.back();
+		object.append(object[0]);
+
+		objects.emplace_back(sf::LineStrip);
+
+	} else if (evt.mouseButton.button == sf::Mouse::Middle && objects.size() > 0) { // TODO: If we have a better way to add finish we dont need the size check
+		cars.emplace_back(std::make_unique<NeuronCar>(mousePos, sf::Vector2f{36, 12}, sf::Color{50, 200, 50}));
+		track = std::make_unique<Track>();
+
+		for (const auto& object : objects) {
+			track->addObject(object);
+		}
 	}
 }

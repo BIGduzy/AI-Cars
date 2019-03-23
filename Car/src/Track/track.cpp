@@ -2,11 +2,9 @@
 
 #include<iostream>
 
-Track::Track(const sf::VertexArray& innerTrack, const sf::VertexArray& outerTrack)
+Track::Track()
 {
 	objects.reserve(2);
-	objects.emplace_back(innerTrack);
-	objects.emplace_back(outerTrack);
 	/*
 		THIS TRACK HAS TO MANY RIGHTS TO LEARN
 	*/

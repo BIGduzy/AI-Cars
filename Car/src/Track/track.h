@@ -10,10 +10,11 @@ private:
 	// sf::VertexArray objects;  // TODO: We could use vertex
 	std::vector<sf::VertexArray> objects;
 public:
-	Track(const sf::VertexArray& innerTrack, const sf::VertexArray& outerTrack);
+	Track();
 
-	inline const std::array<sf::Vertex, 2> getFinishLine() const { return {objects[0][0], objects[1][0]}; }; // TODO: Create custorm fishishes
+	const std::array<sf::Vertex, 2> getFinishLine() const { return {objects[0][0], objects[1][0]}; }; // TODO: Create custorm fishishes
 	//inline const std::array<sf::Vertex, 2> getFinishLine() const { return {objects[123], objects[124]}; }; // TODO: Let's not hardcode this
 	//inline const std::array<sf::Vertex, 2> getFinishLine() const { return {objects[9], objects[10]}; };
-	inline const std::vector<sf::VertexArray>& getObjects() const { return objects; }
+	const std::vector<sf::VertexArray>& getObjects() const { return objects; }
+	void addObject(const sf::VertexArray& object) { objects.push_back(object); }
 };

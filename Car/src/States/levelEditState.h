@@ -16,8 +16,7 @@ private:
 	static constexpr unsigned GRID_SIZE = 16;
 	std::unique_ptr<Track> track = nullptr;
 
-	sf::VertexArray outerTrack, innerTrack;
-	sf::VertexArray* selectedTrack = &outerTrack;
+	std::vector<sf::VertexArray> objects;
 	std::vector<std::unique_ptr<Car>> cars;
 
 private:
