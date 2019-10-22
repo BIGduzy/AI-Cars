@@ -65,21 +65,21 @@ void Net::backProp(const std::vector<double>& targetVals) {
 	/* Calculate overall net error (RMS of output neuron errors) */
 
 	Layer& outputLayer = m_layers.back();
-	m_error = 0.0;
+	//m_error = 0.0;
 
-	for (unsigned i = 0; i < outputLayer.size() - 1; ++i) { // Exclude bias
-		double delta = targetVals[i] - outputLayer[i].getOutputVal();
+	//for (unsigned i = 0; i < outputLayer.size() - 1; ++i) { // Exclude bias
+	//	double delta = targetVals[i] - outputLayer[i].getOutputVal();
 
-		m_error += delta * delta;
-	}
+	//	m_error += delta * delta;
+	//}
 
-	m_error /= outputLayer.size() - 1; // get avarage error squared
-	m_error = sqrt(m_error); // RMS
+	//m_error /= outputLayer.size() - 1; // get avarage error squared
+	//m_error = sqrt(m_error); // RMS
 
 
 	/* Implement a recent avarage measurement */
 
-	m_recentAverageError = (m_recentAverageError * m_recentAverageSmoothingFactor + m_error) / (m_recentAverageSmoothingFactor + 1.0);
+	//m_recentAverageError = (m_recentAverageError * m_recentAverageSmoothingFactor + m_error) / (m_recentAverageSmoothingFactor + 1.0);
 
 
 	/* Calculate output layer gradients */

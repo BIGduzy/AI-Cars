@@ -241,7 +241,15 @@ void LevelEditState::onKeyReleased(sf::Event& evt) {
 		break;
 	case sf::Keyboard::Space:
 	case sf::Keyboard::S:
+	{
+		sf::Vector2f mousePos(static_cast<float>(sf::Mouse::getPosition(window).x / GRID_SIZE) * GRID_SIZE, static_cast<float>(sf::Mouse::getPosition(window).y / GRID_SIZE) * GRID_SIZE);
+		cars.emplace_back(std::make_unique<NeuronCar>(mousePos, sf::Vector2f{36, 12}, sf::Color{50, 200, 50}));
+		track = std::make_unique<Track>();
 
+		for (const auto& object : objects) {
+			track->addObject(object);
+		}
+	}
 		break;
 	case sf::Keyboard::D:
 		break;
